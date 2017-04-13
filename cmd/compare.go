@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 
 	"github.com/spf13/cobra"
@@ -44,4 +45,21 @@ func publicKeyFile(file string) ssh.AuthMethod {
 		return nil
 	}
 	return ssh.PublicKeys(key)
+}
+
+//get a new ssh connection
+func sshSession(h, p string, s *ssh.ClientConfig) (*ssh.Session, error) {
+
+	connection, err := ssh.Dial("tcp", h+":"+p, s)
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to dial: %s", err)
+	}
+
+	session, err := connection.NewSession()
+	if err != nil {
+		return nil, fmt.Errorf("Failed to create session: %s", err)
+	}
+
+	return session, nil
 }
