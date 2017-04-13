@@ -19,21 +19,36 @@ var lester = &cobra.Command{
 	},
 }
 
+var compareCommand = &cobra.Command{
+	Use:   "compare",
+	Short: "compares files from two remote systems",
+	Long:  "", //TODO document the long output,
+	Run:   compare,
+}
+
 var verbose bool
-var logging bool
-var logFile string
-var verboseLog bool
 var quiet bool
+
+var userName string
+var privateKeyFile string
+var hosts string
 
 func main() {
 	lester.Execute()
 }
 
 func init() {
-	lester.AddCommand()
-
+	// global flags for lester
 	lester.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 	lester.PersistentFlags().BoolVar(&quiet, "quiet", false, "run in quiet mode")
+
+	// flags controlling the compare command
+	compareCommand.Flags().StringVarP(&privateKeyFile, "privateKey", "P", "~/.ssh/id_rsa", "private keyfile to use to connect to remote machines (defaults to ~/.ssh/id_rsa)")
+	compareCommand.Flags().StringVarP(&userName, "user", "u", "", "username to use when connecting to remote machines")
+	compareCommand.Flags().StringVarP(&hosts, "host_list", "h", "localhost", "comma seperated list of hosts (2max for now)")
+
+	lester.AddCommand(compareCommand)
+
 }
 
 func initializeConfig() {
